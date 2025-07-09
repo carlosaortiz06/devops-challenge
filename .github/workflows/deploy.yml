@@ -39,3 +39,39 @@ jobs:
         shell: powershell
         run: |
           kubectl apply -f k8s/
+
+      - name: Wait for pod to be ready
+        shell: powershell
+        run: |
+          $podReady = $false
+          for ($i = 0; $i -lt 20; $i++) {
+            $status = kubectl get pods -n devops-challenge -l app=node-app -o jsonpath="{.items[0].status.phase}"
+            if ($status -eq "Running") {
+              Write-Host "✅ Pod is running"
+              $podReady = $true
+              break
+            }
+            Write-Host "⏳ Waiting for pod to be ready... ($i)"
+            Start-Sleep -Seconds 5
+          }
+          if (-not $podReady) {
+            throw "❌ Pod did not become ready in time."
+          }
+
+      - name: Test /health endpoint via port-forward
+        shell: powershell
+        run: |
+          $job = Start-Job { kubectl port-forward svc/app-service 8080:80 -n devops-challenge }
+          Start-Sleep -Seconds 5  # Give it time to start
+          try {
+            $response = Invoke-RestMethod -Uri http://localhost:8080/health
+            if ($response.status -ne "ok") {
+              throw "❌ /health returned unexpected response: $($response | ConvertTo-Json)"
+            }
+            Write-Host "✅ /health check passed: $($response | ConvertTo-Json)"
+          } catch {
+            throw "❌ Failed to connect to app endpoint: $_"
+          } finally {
+            Stop-Job $job | Out-Null
+            Remove-Job $job | Out-Null
+          }
