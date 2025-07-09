@@ -18,7 +18,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ghcr.io/${{ secrets.GHCR_USERNAME }}/node-app:latest ./app
+          docker build -t ghcr.io/${{ secrets.GHCR_USERNAME }}/node-app:latest 
           docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/node-app:latest
 
       - name: Set up kubeconfig
