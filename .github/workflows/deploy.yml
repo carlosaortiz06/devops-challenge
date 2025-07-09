@@ -70,7 +70,7 @@ jobs:
               throw "❌ /health returned unexpected response: $($response | ConvertTo-Json)"
             }
             Write-Host "✅ /health check passed: $($response | ConvertTo-Json)"
-            Write-Host "🌐 Esperando 60 segundos para abrir en navegador: http://localhost:8080"
+            Write-Host "🌐 Esperando 60 segundos para abrir en navegador: http://localhost:8080/health"
             Start-Sleep -Seconds 60
           } catch {
             throw "❌ Error al probar el endpoint: $_"
