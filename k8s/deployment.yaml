@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: app
+  namespace: devops-challenge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: node-app
+  template:
+    metadata:
+      labels:
+        app: node-app
+    spec:
+      imagePullSecrets:
+        - name: ghcr-secret    
+      containers:
+        - name: node-app
+          image: ghcr.io/carlosaortiz06/node-app:latest
+          ports:
+            - containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          env:
+            - name: SECRET_VALUE
+              valueFrom:
+                secretKeyRef:
+                  name: my-secret
+                  key: secret-value

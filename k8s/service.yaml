@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: app-service
+  namespace: devops-challenge
+spec:
+  selector:
+    app: node-app
+  ports:
+    - port: 80
+      targetPort: 3000
