@@ -36,16 +36,9 @@ kubectl apply -f k8s/
 
 3. 🤖 Cómo ejecutar la pipeline
 
-Opción A – GitHub Actions (recomendado):
+
 Solo haz push a la rama main y GitHub ejecutará automáticamente el flujo CI/CD descrito en .github/workflows/deploy.yml.
 
-Opción B – Manual (localmente en Kind):
-docker build -t node-app:local .
-kind load docker-image node-app:local --name devops-challenge
-
-Luego edita el deployment:
-kubectl edit deployment app -n devops-challenge
-Cambia la imagen a: image: node-app:local
 
 4. 🔍 Comandos de validación
 
