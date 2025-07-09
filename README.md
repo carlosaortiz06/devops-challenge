@@ -43,7 +43,7 @@ Nombre del secreto: my-secret
 
 Namespace: devops-challenge
 
-Clave: secret-value, con valor base64 c2VjcmV0 (equivalente a "secret")
+Clave: secret-value, con valor base64 
 
 Este secreto se usa para inyectar la variable SECRET_VALUE al contenedor de la aplicación, permitiendo gestionar credenciales sin exponerlas en texto plano.
 
