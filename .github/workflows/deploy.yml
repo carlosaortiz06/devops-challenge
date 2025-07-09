@@ -12,20 +12,30 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Log in to GitHub Container Registry
+      - name: Log in to GitHub Container Registry (compatible con Windows)
+        shell: pwsh
         run: |
-          echo "${{ secrets.GHCR_TOKEN }}" | docker login ghcr.io -u "${{ secrets.GHCR_USERNAME }}" --password-stdin
+          $GHCR_USERNAME = "${{ secrets.GHCR_USERNAME }}"
+          $GHCR_TOKEN = "${{ secrets.GHCR_TOKEN }}"
+          $pass = $GHCR_TOKEN | ConvertTo-SecureString -AsPlainText -Force
+          $cred = New-Object System.Management.Automation.PSCredential($GHCR_USERNAME, $pass)
+          docker login ghcr.io --username $cred.UserName --password $cred.GetNetworkCredential().Password
 
       - name: Build and push Docker image
+        shell: pwsh
         run: |
-          docker build -t ghcr.io/${{ secrets.GHCR_USERNAME }}/node-app:latest .
-          docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/node-app:latest
+          $USERNAME = "${{ secrets.GHCR_USERNAME }}"
+          docker build -t ghcr.io/$USERNAME/node-app:latest .
+          docker push ghcr.io/$USERNAME/node-app:latest
 
       - name: Set up kubeconfig
+        shell: pwsh
         run: |
-          mkdir -p $HOME/.kube
-          echo "${{ secrets.KUBECONFIG_DATA }}" | base64 -d > $HOME/.kube/config
+          mkdir $env:USERPROFILE\.kube -Force
+          $decoded = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String("${{ secrets.KUBECONFIG_DATA }}"))
+          Set-Content -Path "$env:USERPROFILE\.kube\config" -Value $decoded
 
       - name: Deploy to Kubernetes
+        shell: pwsh
         run: |
           kubectl apply -f k8s/
