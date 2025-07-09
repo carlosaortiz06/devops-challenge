@@ -12,8 +12,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Log in to GitHub Container Registry (compatible con Windows)
-        shell: pwsh
+      - name: Log in to GitHub Container Registry (Windows)
+        shell: powershell
         run: |
           $GHCR_USERNAME = "${{ secrets.GHCR_USERNAME }}"
           $GHCR_TOKEN = "${{ secrets.GHCR_TOKEN }}"
@@ -22,20 +22,20 @@ jobs:
           docker login ghcr.io --username $cred.UserName --password $cred.GetNetworkCredential().Password
 
       - name: Build and push Docker image
-        shell: pwsh
+        shell: powershell
         run: |
           $USERNAME = "${{ secrets.GHCR_USERNAME }}"
           docker build -t ghcr.io/$USERNAME/node-app:latest .
           docker push ghcr.io/$USERNAME/node-app:latest
 
       - name: Set up kubeconfig
-        shell: pwsh
+        shell: powershell
         run: |
           mkdir $env:USERPROFILE\.kube -Force
           $decoded = [System.Text.Encoding]::UTF8.GetString([Convert]::FromBase64String("${{ secrets.KUBECONFIG_DATA }}"))
           Set-Content -Path "$env:USERPROFILE\.kube\config" -Value $decoded
 
       - name: Deploy to Kubernetes
-        shell: pwsh
+        shell: powershell
         run: |
           kubectl apply -f k8s/
