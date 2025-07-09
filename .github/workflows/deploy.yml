@@ -58,20 +58,24 @@ jobs:
             throw "❌ Pod did not become ready in time."
           }
 
-      - name: Test /health endpoint via port-forward
+      - name: Test /health endpoint via port-forward (1 minuto activo)
         shell: powershell
         run: |
           $job = Start-Job { kubectl port-forward svc/app-service 8080:80 -n devops-challenge }
-          Start-Sleep -Seconds 5  # Give it time to start
+          Start-Sleep -Seconds 5  # Espera a que levante el puerto
+
           try {
             $response = Invoke-RestMethod -Uri http://localhost:8080/health
             if ($response.status -ne "ok") {
               throw "❌ /health returned unexpected response: $($response | ConvertTo-Json)"
             }
             Write-Host "✅ /health check passed: $($response | ConvertTo-Json)"
+            Write-Host "🌐 Esperando 60 segundos para abrir en navegador: http://localhost:8080"
+            Start-Sleep -Seconds 60
           } catch {
-            throw "❌ Failed to connect to app endpoint: $_"
+            throw "❌ Error al probar el endpoint: $_"
           } finally {
             Stop-Job $job | Out-Null
             Remove-Job $job | Out-Null
           }
+
