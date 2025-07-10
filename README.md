@@ -89,3 +89,4 @@ Verificación del endpoint /health
 Se realiza un kubectl port-forward para exponer temporalmente la app en localhost:8080. Se ejecuta una llamada HTTP al endpoint /health y se espera una respuesta con { status: "ok" }. Si es exitosa, se mantiene el puerto abierto por 60 segundos para validación manual.
 
 
+#
