@@ -7,5 +7,5 @@ spec:
   selector:
     app: node-app
   ports:
-    - port: 80
-      targetPort: 3000
+    - port: 80 # Puerto expuesto por el servicio
+      targetPort: 3000 # Puerto interno del contenedor
